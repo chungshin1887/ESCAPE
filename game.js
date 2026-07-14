@@ -509,6 +509,185 @@ function checkWin() {
 // ============================================================
 // 렌더링
 // ============================================================
+// ---------- 이모지 픽셀화 (디지털 세상 / 스좀비 전용) ----------
+const pixelEmojiCache = new Map();
+function getPixelatedEmoji(emoji, size) {
+  const key = emoji + '_' + size;
+  if (pixelEmojiCache.has(key)) return pixelEmojiCache.get(key);
+  const small = 14;
+  const off1 = document.createElement('canvas');
+  off1.width = small; off1.height = small;
+  const c1 = off1.getContext('2d');
+  c1.font = `${small}px serif`;
+  c1.textAlign = 'center'; c1.textBaseline = 'middle';
+  c1.fillText(emoji, small / 2, small / 2 + 1);
+  const off2 = document.createElement('canvas');
+  off2.width = Math.max(4, Math.round(size)); off2.height = off2.width;
+  const c2 = off2.getContext('2d');
+  c2.imageSmoothingEnabled = false;
+  c2.drawImage(off1, 0, 0, off2.width, off2.height);
+  pixelEmojiCache.set(key, off2);
+  return off2;
+}
+function drawEmoji(emoji, cx, bottomY, size, pixelated) {
+  if (size < 3) return;
+  if (pixelated) {
+    const img = getPixelatedEmoji(emoji, size);
+    ctx.drawImage(img, cx - size / 2, bottomY - size, size, size);
+  } else {
+    ctx.font = `${size}px serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText(emoji, cx, bottomY);
+  }
+}
+
+// ---------- 픽셀 히어로 (디지털 세상) ----------
+function rr(x, y, w, h, color) {
+  ctx.fillStyle = color;
+  ctx.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h));
+}
+function drawPixelHero(cx, bottom, w, h, mode, frame, speedFactor, confused) {
+  const u = Math.max(3, Math.round(w / 9));
+  const step = Math.floor(frame / Math.max(3, Math.round(9 / speedFactor))) % 4;
+  const hoodie = '#3fd0ff', pants = '#171733', skin = '#ffd39b', hair = '#241708', shoe = '#ff5da2';
+  const topY = bottom - h;
+  ctx.save();
+  ctx.imageSmoothingEnabled = false;
+
+  if (mode === 'zombie') {
+    const shuffle = (step % 2) * u * 0.6;
+    rr(cx - u * 1.4, bottom - u * 3, u * 1.2, u * 3, '#5a7a52');
+    rr(cx + u * 0.2, bottom - u * 3 + shuffle, u * 1.2, u * 3 - shuffle, '#5a7a52');
+    rr(cx - u * 2, topY + u * 3, u * 4, u * 3.5, '#3f5c3a');
+    rr(cx - u * 3.4, topY + u * 3, u * 1.6, u, '#7fae72');
+    rr(cx + u * 1.8, topY + u * 3, u * 1.6, u, '#7fae72');
+    rr(cx - u * 1.6, topY, u * 3.2, u * 3, '#8fc27f');
+    rr(cx - u * 1.6, topY - u * 0.4, u * 3.2, u * 0.6, hair);
+  } else if (mode === 'trapped') {
+    const jit = Math.sin(frame * 0.9) * u * 0.6;
+    rr(cx - u * 1.6 + jit, bottom - u * 2.2, u * 1.3, u * 2.2, pants);
+    rr(cx + u * 0.3 + jit, bottom - u * 2.2, u * 1.3, u * 2.2, pants);
+    rr(cx - u * 2 + jit, topY + u * 3, u * 4, u * 3, hoodie);
+    rr(cx - u * 3 + jit, topY + u * 1.5, u * 1.4, u * 2, hoodie);
+    rr(cx + u * 1.6 + jit, topY + u * 1.5, u * 1.4, u * 2, hoodie);
+    rr(cx - u * 1.5 + jit, topY, u * 3, u * 3, skin);
+    rr(cx - u * 1.6 + jit, topY - u * 0.6, u * 3.2, u, hair);
+  } else if (mode === 'jump') {
+    rr(cx - u * 1.8, bottom - u * 1.6, u * 1.5, u * 1.6, pants);
+    rr(cx + u * 0.3, bottom - u * 2.2, u * 1.5, u * 1.6, pants);
+    rr(cx - u * 2, topY + u * 2.6, u * 4, u * 3, hoodie);
+    rr(cx - u * 3.2, topY + u * 1, u * 1.4, u * 2, hoodie);
+    rr(cx + u * 1.8, topY + u * 0.4, u * 1.4, u * 2, hoodie);
+    rr(cx - u * 1.5, topY - u * 0.2, u * 3, u * 3, skin);
+    rr(cx - u * 1.6, topY - u * 0.8, u * 3.2, u, hair);
+  } else if (mode === 'slide') {
+    const sy = bottom - h * SLIDE_HEIGHT_RATIO;
+    rr(cx - u * 2.6, bottom - u * 1.4, u * 2.2, u * 1.4, pants);
+    rr(cx + u * 0.6, bottom - u * 1.4, u * 2.2, u * 1.4, pants);
+    rr(cx - u * 2.4, sy + u * 0.4, u * 4.6, u * 2.2, hoodie);
+    rr(cx + u * 2.2, sy, u * 1.6, u * 1.2, hoodie);
+    rr(cx - u * 2.6, sy - u * 1.6, u * 2.6, u * 2, skin);
+    rr(cx - u * 2.6, sy - u * 2.1, u * 2.6, u * 0.7, hair);
+  } else {
+    const bounce = (step === 1 || step === 3) ? -u * 0.5 : 0;
+    const frontDX = step === 0 ? u * 1.6 : step === 2 ? -u * 1.6 : 0;
+    const backDX = step === 0 ? -u * 1.6 : step === 2 ? u * 1.6 : 0;
+    rr(cx - u * 0.6 + backDX, bottom - u * 2 + (backDX !== 0 ? -u * 0.8 : 0), u * 1.3, u * 2, shoe);
+    rr(cx - u * 0.6 + backDX, bottom - u * 2.6 + (backDX !== 0 ? -u * 0.8 : 0), u * 1.3, u * 1.4, pants);
+    rr(cx - u * 0.6 + frontDX, bottom - u * 2, u * 1.3, u * 2, shoe);
+    rr(cx - u * 0.6 + frontDX, bottom - u * 2.6, u * 1.3, u * 1.4, pants);
+    rr(cx - u * 2 + backDX * 0.3, topY + u * 2.6 + bounce, u * 4, u * 3, hoodie);
+    rr(cx - u * 3.2 - backDX * 0.4, topY + u * 2.8 + bounce, u * 1.3, u * 1.8, hoodie);
+    rr(cx + u * 1.9 + frontDX * 0.4, topY + u * 2.6 + bounce, u * 1.3, u * 1.8, hoodie);
+    rr(cx - u * 1.5, topY + bounce, u * 3, u * 3, skin);
+    rr(cx - u * 1.6, topY - u * 0.6 + bounce, u * 3.2, u, hair);
+  }
+  if (confused) drawConfuseStars(cx, topY - u);
+  ctx.restore();
+}
+
+// ---------- 일반 히어로 (현실 세계) ----------
+function drawNormalHero(cx, bottom, w, h, mode, frame, speedFactor, confused) {
+  const t = frame * 0.14 * speedFactor;
+  const topY = bottom - h;
+  const headR = w * 0.28;
+  const bodyColor = '#ff8a4c', pantsColor = '#3a3a5c', skin = '#ffd8ad', hair = '#2b1a10';
+
+  ctx.save();
+  ctx.lineCap = 'round';
+
+  if (mode === 'zombie') {
+    ctx.strokeStyle = '#6f9a64'; ctx.lineWidth = w * 0.16;
+    ctx.beginPath(); ctx.moveTo(cx, topY + h * 0.55); ctx.lineTo(cx - w * 0.6, topY + h * 0.35); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx, topY + h * 0.55); ctx.lineTo(cx + w * 0.6, topY + h * 0.35); ctx.stroke();
+    const shuffle = Math.sin(t) * 4;
+    ctx.beginPath(); ctx.moveTo(cx - w * 0.15, bottom - h * 0.4); ctx.lineTo(cx - w * 0.15 + shuffle, bottom); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx + w * 0.15, bottom - h * 0.4); ctx.lineTo(cx + w * 0.15 - shuffle, bottom); ctx.stroke();
+    ctx.fillStyle = pantsColor; ctx.fillRect(cx - w * 0.28, topY + h * 0.5, w * 0.56, h * 0.32);
+    ctx.fillStyle = '#8fc27f'; ctx.beginPath(); ctx.arc(cx, topY + headR, headR, 0, Math.PI * 2); ctx.fill();
+  } else if (mode === 'trapped') {
+    const jit = Math.sin(frame * 0.9) * 4;
+    drawBodyBase(cx + jit, topY, bottom, w, h, bodyColor, pantsColor, skin, hair);
+    ctx.strokeStyle = skin; ctx.lineWidth = w * 0.14;
+    ctx.beginPath(); ctx.moveTo(cx - w * 0.2 + jit, topY + h * 0.35); ctx.lineTo(cx - w * 0.55 + jit, topY + h * 0.05 + Math.sin(frame * 0.5) * 6); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx + w * 0.2 + jit, topY + h * 0.35); ctx.lineTo(cx + w * 0.55 + jit, topY + h * 0.05 - Math.sin(frame * 0.5) * 6); ctx.stroke();
+  } else if (mode === 'jump') {
+    drawBodyBase(cx, topY, bottom, w, h, bodyColor, pantsColor, skin, hair, true);
+  } else if (mode === 'slide') {
+    const sy = bottom - h * SLIDE_HEIGHT_RATIO;
+    ctx.fillStyle = bodyColor;
+    ctx.beginPath(); ctx.ellipse(cx, sy + h * 0.15, w * 0.62, h * 0.2, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = skin; ctx.beginPath(); ctx.arc(cx - w * 0.55, sy + h * 0.05, headR * 0.85, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = pantsColor; ctx.lineWidth = w * 0.16;
+    ctx.beginPath(); ctx.moveTo(cx + w * 0.2, sy + h * 0.15); ctx.lineTo(cx + w * 0.75, sy + h * 0.1); ctx.stroke();
+  } else {
+    const legSwing = Math.sin(t) * (w * 0.5);
+    const armSwing = Math.sin(t + Math.PI) * (w * 0.42);
+    const bounce = Math.abs(Math.cos(t)) * h * 0.05;
+    const cy = topY - bounce;
+
+    ctx.strokeStyle = pantsColor; ctx.lineWidth = w * 0.2;
+    ctx.beginPath(); ctx.moveTo(cx, cy + h * 0.62); ctx.lineTo(cx + legSwing, bottom); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx, cy + h * 0.62); ctx.lineTo(cx - legSwing, bottom); ctx.stroke();
+
+    ctx.strokeStyle = skin; ctx.lineWidth = w * 0.15;
+    ctx.beginPath(); ctx.moveTo(cx, cy + h * 0.3); ctx.lineTo(cx + armSwing, cy + h * 0.58); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx, cy + h * 0.3); ctx.lineTo(cx - armSwing, cy + h * 0.58); ctx.stroke();
+
+    ctx.fillStyle = bodyColor;
+    ctx.beginPath(); ctx.ellipse(cx, cy + h * 0.42, w * 0.36, h * 0.26, 0, 0, Math.PI * 2); ctx.fill();
+
+    ctx.fillStyle = skin;
+    ctx.beginPath(); ctx.arc(cx, cy + headR * 0.9, headR, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = hair;
+    ctx.beginPath(); ctx.arc(cx, cy + headR * 0.55, headR * 1.02, Math.PI, Math.PI * 2); ctx.fill();
+  }
+  if (confused) drawConfuseStars(cx, topY - 10);
+  ctx.restore();
+}
+function drawBodyBase(cx, topY, bottom, w, h, bodyColor, pantsColor, skin, hair, armsUp) {
+  const headR = w * 0.28;
+  ctx.strokeStyle = pantsColor; ctx.lineWidth = w * 0.2; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(cx, topY + h * 0.62); ctx.lineTo(cx - w * 0.28, bottom); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx, topY + h * 0.62); ctx.lineTo(cx + w * 0.05, bottom - h * 0.1); ctx.stroke();
+  ctx.strokeStyle = skin; ctx.lineWidth = w * 0.15;
+  const armY = armsUp ? topY + h * 0.05 : topY + h * 0.58;
+  ctx.beginPath(); ctx.moveTo(cx, topY + h * 0.3); ctx.lineTo(cx - w * 0.5, armY); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx, topY + h * 0.3); ctx.lineTo(cx + w * 0.5, armY); ctx.stroke();
+  ctx.fillStyle = bodyColor;
+  ctx.beginPath(); ctx.ellipse(cx, topY + h * 0.42, w * 0.36, h * 0.26, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = skin;
+  ctx.beginPath(); ctx.arc(cx, topY + headR * 0.9, headR, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = hair;
+  ctx.beginPath(); ctx.arc(cx, topY + headR * 0.55, headR * 1.02, Math.PI, Math.PI * 2); ctx.fill();
+}
+function drawConfuseStars(cx, y) {
+  ctx.font = '16px serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('❓', cx, y);
+}
+
 function drawBackgroundDigital(speed) {
   const grad = ctx.createLinearGradient(0, 0, 0, H);
   grad.addColorStop(0, '#0b0326');
@@ -578,38 +757,30 @@ function drawBackgroundReal(speed) {
   }
 }
 
-function drawPlayer() {
+function drawPlayer(speed) {
   const p = state.player;
   ctx.save();
   if (p.invulnTimer > 0 && Math.floor(state.frame / 4) % 2 === 0) ctx.globalAlpha = 0.4;
 
   const box = playerHitbox();
-  let emoji = '🏃';
-  if (p.phoneZombieTimer > 0) emoji = '🧟';
-  else if (p.trappedTimer > 0) emoji = '🥴';
-  else if (p.mode === 'slide') emoji = '🧎';
-  else if (p.mode === 'jump') emoji = '🤸';
-  else if (p.confuseTimer > 0) emoji = '😵';
+  const cx = box.x + box.w / 2;
+  const bottom = box.y + box.h;
+  const speedFactor = Math.max(0.6, speed / 6.5);
 
-  ctx.font = `${box.h + 10}px serif`;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'bottom';
+  let poseMode = p.mode;
+  if (p.phoneZombieTimer > 0) poseMode = 'zombie';
+  else if (p.trappedTimer > 0) poseMode = 'trapped';
 
-  const centerX = box.x + box.w / 2;
-  ctx.save();
-  ctx.translate(centerX, 0);
-  ctx.scale(-1, 1);
-  ctx.fillText(emoji, 0, box.y + box.h + 4);
-  ctx.restore();
-
-  if (p.confuseTimer > 0) {
-    ctx.font = '18px serif';
-    ctx.fillText('❓', box.x + box.w / 2, box.y - 6);
+  if (state.phase === 'digital') {
+    drawPixelHero(cx, bottom, box.w, box.h, poseMode, state.frame, speedFactor, p.confuseTimer > 0);
+  } else {
+    drawNormalHero(cx, bottom, box.w, box.h, poseMode, state.frame, speedFactor, p.confuseTimer > 0);
   }
   ctx.restore();
 }
 
 function drawEntities() {
+  const pixelated = state.phase === 'digital';
   for (const e of state.entities) {
     if (e.def.kind === 'hazard_zone') {
       ctx.save();
@@ -626,19 +797,14 @@ function drawEntities() {
       ctx.fill();
       ctx.restore();
     }
-    ctx.font = `${e.h + 8}px serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'bottom';
-    ctx.fillText(e.def.emoji, e.x + e.w / 2, e.y + e.h + 6);
+    drawEmoji(e.def.emoji, e.x + e.w / 2, e.y + e.h + 6, e.h + 8, pixelated);
   }
 }
 
 function drawZombies() {
+  // 스좀비는 세상이 바뀌어도 디지털 존재이므로 항상 픽셀화된 형태로 표시
   for (const z of state.zombies) {
-    ctx.font = `${z.h + 6}px serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'bottom';
-    ctx.fillText('🧟', z.x + z.w / 2, z.y + z.h + 6);
+    drawEmoji('🧟', z.x + z.w / 2, z.y + z.h + 6, z.h + 6, true);
   }
 }
 
@@ -661,7 +827,7 @@ function render(speed) {
 
   drawEntities();
   drawZombies();
-  drawPlayer();
+  drawPlayer(speed);
   drawParticles();
 
   if (state.transitionFlash > 0) {
