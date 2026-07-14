@@ -140,6 +140,130 @@ html, body {
 }
 #start-btn:hover, #retry-btn:hover, #win-retry-btn:hover { transform: scale(1.06); }
 
+/* ===================== 아이템 정보 버튼 & 모달 ===================== */
+#info-btn {
+  order: 5;
+  margin-top: -6px;
+  font-size: 22px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+#info-btn:hover {
+  transform: rotate(45deg) scale(1.08);
+  background: rgba(255,255,255,0.16);
+}
+
+#item-info-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 1, 10, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 16px;
+}
+
+#item-info-panel {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  max-height: 84vh;
+  overflow-y: auto;
+  background: linear-gradient(180deg, #170a38, #0b0420);
+  border: 2px solid #7d5fff;
+  border-radius: 14px;
+  padding: 26px 22px 20px;
+  box-shadow: 0 0 40px rgba(125,95,255,0.45);
+  color: #fff;
+}
+
+#item-info-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  font-size: 15px;
+  cursor: pointer;
+}
+#item-info-close:hover { background: rgba(255,255,255,0.2); }
+
+#item-info-title {
+  text-align: center;
+  font-size: 18px;
+  margin-bottom: 18px;
+  letter-spacing: 1px;
+}
+
+#item-info-columns {
+  display: flex;
+  gap: 14px;
+}
+
+.info-col {
+  flex: 1;
+  min-width: 0;
+  border-radius: 10px;
+  padding: 12px 12px 14px;
+}
+.info-col-good {
+  background: rgba(90, 255, 150, 0.08);
+  border: 1px solid rgba(90, 255, 150, 0.35);
+}
+.info-col-bad {
+  background: rgba(255, 90, 110, 0.08);
+  border: 1px solid rgba(255, 90, 110, 0.35);
+}
+.info-col h3 {
+  font-size: 13px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.info-col ul, #info-extra-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.info-col li, #info-extra-list li {
+  font-size: 13px;
+  line-height: 1.5;
+  background: rgba(255,255,255,0.05);
+  border-radius: 8px;
+  padding: 6px 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.info-emoji { font-size: 18px; }
+
+#info-extra-wrap {
+  margin-top: 16px;
+  border-top: 1px dashed rgba(255,255,255,0.2);
+  padding-top: 12px;
+}
+#info-extra-wrap h3 {
+  font-size: 13px;
+  margin-bottom: 10px;
+  text-align: center;
+  color: #ffe14d;
+}
+
 /* ===================== 게임 화면 ===================== */
 #game-screen {
   justify-content: flex-start;

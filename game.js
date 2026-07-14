@@ -28,6 +28,12 @@ const statusBanner = document.getElementById('status-banner');
 const gameoverScoreEl = document.getElementById('gameover-score');
 const btnJumpTouch = document.getElementById('btn-jump');
 const btnSlideTouch = document.getElementById('btn-slide');
+const infoBtn = document.getElementById('info-btn');
+const infoModal = document.getElementById('item-info-modal');
+const infoCloseBtn = document.getElementById('item-info-close');
+const infoGoodList = document.getElementById('info-good-list');
+const infoBadList = document.getElementById('info-bad-list');
+const infoExtraList = document.getElementById('info-extra-list');
 
 // ---------- 스토리 대사 ----------
 const dialogueLines = [
@@ -43,6 +49,7 @@ function showDialogue(i) {
   if (i >= dialogueLines.length) {
     dialogueHint.classList.add('hidden');
     startBtn.classList.remove('hidden');
+    infoBtn.classList.remove('hidden');
     dialogueText.textContent = "준비됐다면 아래 버튼을 눌러 시작하자!";
     return;
   }
@@ -135,6 +142,43 @@ const ITEMS = [
   { id: 'choco', name: '초콜릿', emoji: '🍫', kind: 'good', score: 800, w: 32, h: 30 },
   { id: 'phone', name: '핸드폰', emoji: '📱', kind: 'bad_item', score: -600, w: 30, h: 34 },
 ];
+
+// ============================================================
+// 아이템 정보 모달 (설정 ⚙️ 버튼)
+// ============================================================
+function buildItemInfoModal() {
+  // 좌측: 먹으면 점수가 오르는 아이템
+  const goodItems = ITEMS.filter((it) => it.kind === 'good');
+  infoGoodList.innerHTML = goodItems
+    .map((it) => `<li><span class="info-emoji">${it.emoji}</span> ${it.name}: <b>+${it.score.toLocaleString()}점</b></li>`)
+    .join('');
+
+  // 우측: 닿으면 목숨(하트)이 깎이는 장애물
+  const allObstacles = DIGITAL_OBSTACLES.concat(REAL_OBSTACLES, SPECIAL_OBSTACLES);
+  const lifeLossObstacles = allObstacles.filter((o) => ['obstacle', 'trap', 'confuse', 'pit'].includes(o.kind));
+  infoBadList.innerHTML = lifeLossObstacles
+    .map((o) => `<li><span class="info-emoji">${o.emoji}</span> ${o.name}: <b>❤️ -1</b></li>`)
+    .join('');
+
+  // 그 외: 점수만 깎이는 아이템 / 속도만 느려지는 장판
+  const badScoreItems = ITEMS.filter((it) => it.kind === 'bad_item');
+  const hazardZones = allObstacles.filter((o) => o.kind === 'hazard_zone');
+  const extras = [];
+  badScoreItems.forEach((it) => {
+    extras.push(`<li><span class="info-emoji">${it.emoji}</span> ${it.name}: <b>${it.score.toLocaleString()}점</b> (목숨은 안 깎여요)</li>`);
+  });
+  hazardZones.forEach((o) => {
+    extras.push(`<li><span class="info-emoji">${o.emoji}</span> ${o.name}: <b>🐌 속도 감소</b> (목숨은 안 깎여요)</li>`);
+  });
+  infoExtraList.innerHTML = extras.join('');
+}
+buildItemInfoModal();
+
+function openInfoModal() { infoModal.classList.remove('hidden'); }
+function closeInfoModal() { infoModal.classList.add('hidden'); }
+infoBtn.addEventListener('click', openInfoModal);
+infoCloseBtn.addEventListener('click', closeInfoModal);
+infoModal.addEventListener('click', (e) => { if (e.target === infoModal) closeInfoModal(); });
 
 function currentObstaclePool() {
   return state.phase === 'digital'
