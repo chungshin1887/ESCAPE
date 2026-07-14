@@ -83,67 +83,13 @@ function createGameState() {
 }
 
 function resizeCanvas() {
-  const box = canvas.getBoundingClientRect();
-  const ratio = window.devicePixelRatio || 1;
-
-  canvas.width = Math.round(box.width * ratio);
-  canvas.height = Math.round(box.width * 0.5625 * ratio);
-
-  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+  canvas.width = 1280;
+  canvas.height = 720;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
 }
 
-function resetGame() {
-  cancelAnimationFrame(animationId);
 
-  game = createGameState();
-  lastTime = 0;
-
-  popupBlocker.classList.remove('visible');
-  messageOverlay.classList.remove('visible');
-
-  updateHud();
-  draw();
-}
-
-function startGame() {
-  resetGame();
-
-  storyOverlay.classList.remove('visible');
-  game.running = true;
-
-  animationId = requestAnimationFrame(loop);
-}
-
-function restartGame() {
-  storyOverlay.classList.remove('visible');
-  startGame();
-}
-
-function endGame(success) {
-  if (!game || game.ended) return;
-
-  game.running = false;
-  game.ended = true;
-
-  popupBlocker.classList.remove('visible');
-
-  resultTitle.textContent = success
-    ? '시험 100점 달성!'
-    : '스좀비에게 잡혔어요!';
-
-  resultText.textContent = success
-    ? '인터넷의 유혹을 이겨내고 100,000점을 달성했습니다. 디지털 세상에서 탈출 성공!'
-    : `최종 점수 ${Math.floor(game.score).toLocaleString()}점. 장애물을 피하고 책을 더 모아 다시 도전하세요.`;
-
-  messageOverlay.classList.add('visible');
-}
-
-function jump() {
-  if (!game?.running) return;
-
-  const player = game.player;
-
-  if (player.frozenTimer > 0) return;
+zenTimer > 0) return;
 
   if (player.grounded) {
     player.vy = -930;
@@ -364,12 +310,16 @@ function spawnObstacle() {
     pool[Math.floor(Math.random() * pool.length)];
 
   game.obstacles.push({
-    ...source,
-    x: canvas.clientWidth + 80,
-    hit: false,
-    phase: random(0, Math.PI * 2)
+    type,
+    x: canvas.width + 80 + i * 72,
+    y:
+      count >1
+        ? 430 - Math.sin(i/Math.max(1, count -1)) * Math.PI) * 90 : random(390,500),
+    w: 42,
+    h: 42,
+    collected: false,
+    spin: random(0, Math.PI * 2)
   });
-}
 
 function spawnItemLine() {
   const count = Math.random() < 0.65 ? 4 : 1;
