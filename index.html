@@ -1,0 +1,88 @@
+Library
+/
+index.html
+
+
+
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Escape - 인터넷 중독 탈출</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="game-shell">
+    <header class="game-header">
+      <div>
+        <p class="eyebrow">DIGITAL DETOX RUNNER</p>
+        <h1>ESCAPE</h1>
+      </div>
+      <div class="hud">
+        <div><span>점수</span><strong id="score">0</strong></div>
+        <div><span>목표</span><strong>100,000</strong></div>
+        <div><span>세계</span><strong id="worldLabel">디지털 세상</strong></div>
+      </div>
+    </header>
+
+    <section class="progress-wrap" aria-label="게임 진행률">
+      <div id="progressBar" class="progress-bar"></div>
+    </section>
+
+    <section class="canvas-wrap">
+      <canvas id="gameCanvas" width="1280" height="720"></canvas>
+
+      <div id="statusPanel" class="status-panel"></div>
+
+      <div id="storyOverlay" class="overlay visible">
+        <div class="panel story-panel">
+          <p class="dialogue">“새벽에 잠깐만 보려고 했던 핸드폰을 아침까지 보게 되었다!!”</p>
+          <p class="dialogue accent">“이렇게 살 순 없어!”</p>
+          <div class="phone-portal" aria-hidden="true">
+            <div class="phone-body"><div class="phone-screen">∞</div></div>
+            <div class="portal-ring ring-one"></div>
+            <div class="portal-ring ring-two"></div>
+          </div>
+          <p class="story-text">휴대폰 속 디지털 세상에서 탈출해 책을 모으고 시험 100점을 달성하세요.</p>
+          <button id="startButton" class="primary-button">게임 시작</button>
+        </div>
+      </div>
+
+      <div id="messageOverlay" class="overlay">
+        <div class="panel result-panel">
+          <h2 id="resultTitle">게임 종료</h2>
+          <p id="resultText"></p>
+          <button id="restartButton" class="primary-button">다시 도전</button>
+        </div>
+      </div>
+
+      <div id="popupBlocker" class="popup-blocker">
+        <div class="fake-popup">
+          <button aria-label="닫기">×</button>
+          <strong>지금 바로 클릭!</strong>
+          <p>당신을 위한 추천 영상이 999개 도착했습니다.</p>
+        </div>
+        <div class="fake-popup small-popup">
+          <strong>단톡방 메시지 99+</strong>
+          <p>읽지 않은 알림이 쌓이고 있어요!</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="controls-info">
+      <p><kbd>Space</kbd> / <kbd>↑</kbd> 점프</p>
+      <p><kbd>↓</kbd> 슬라이드</p>
+      <p><kbd>R</kbd> 재시작</p>
+    </section>
+
+    <section class="mobile-controls" aria-label="모바일 조작 버튼">
+      <button id="jumpButton">점프</button>
+      <button id="slideButton">슬라이드</button>
+    </section>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>
