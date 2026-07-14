@@ -1,81 +1,80 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Escape - 인터넷 중독 탈출</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Escape - 인터넷 중독 탈출기</title>
+<link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <main class="game-shell">
-    <header class="game-header">
-      <div>
-        <p class="eyebrow">DIGITAL DETOX RUNNER</p>
-        <h1>ESCAPE</h1>
+
+<div id="game-wrap">
+
+  <!-- ===================== 인트로 스토리 화면 ===================== -->
+  <div id="intro-screen" class="screen">
+    <div class="phone-suck-anim">
+      <div class="glow-phone">📱</div>
+      <div class="player-icon spiral">🏃</div>
+    </div>
+    <div id="dialogue-box">
+      <p id="dialogue-text"></p>
+      <div id="dialogue-next-hint">▶ 클릭해서 계속</div>
+    </div>
+    <button id="start-btn" class="hidden">게임 시작</button>
+    <div class="title-logo">
+      <h1>ESCAPE</h1>
+      <p class="subtitle">인터넷 중독에서 벗어나 시험 100점 맞기!</p>
+    </div>
+  </div>
+
+  <!-- ===================== 게임 화면 ===================== -->
+  <div id="game-screen" class="screen hidden">
+
+    <div id="hud">
+      <div id="hud-left">
+        <div id="lives">❤️❤️❤️</div>
+        <div id="phase-label">🌐 디지털 세상</div>
       </div>
-      <div class="hud">
-        <div><span>점수</span><strong id="score">0</strong></div>
-        <div><span>목표</span><strong>100,000</strong></div>
-        <div><span>세계</span><strong id="worldLabel">디지털 세상</strong></div>
-      </div>
-    </header>
-
-    <section class="progress-wrap" aria-label="게임 진행률">
-      <div id="progressBar" class="progress-bar"></div>
-    </section>
-
-    <section class="canvas-wrap">
-      <canvas id="gameCanvas" width="1280" height="720"></canvas>
-
-      <div id="statusPanel" class="status-panel"></div>
-
-      <div id="storyOverlay" class="overlay visible">
-        <div class="panel story-panel">
-          <p class="dialogue">“새벽에 잠깐만 보려고 했던 핸드폰을 아침까지 보게 되었다!!”</p>
-          <p class="dialogue accent">“이렇게 살 순 없어!”</p>
-          <div class="phone-portal" aria-hidden="true">
-            <div class="phone-body"><div class="phone-screen">∞</div></div>
-            <div class="portal-ring ring-one"></div>
-            <div class="portal-ring ring-two"></div>
-          </div>
-          <p class="story-text">휴대폰 속 디지털 세상에서 탈출해 책을 모으고 시험 100점을 달성하세요.</p>
-          <button id="startButton" class="primary-button">게임 시작</button>
+      <div id="hud-center">
+        <div id="progress-bar-outer">
+          <div id="progress-bar-inner"></div>
+          <div id="progress-text">0 / 100000</div>
         </div>
       </div>
-
-      <div id="messageOverlay" class="overlay">
-        <div class="panel result-panel">
-          <h2 id="resultTitle">게임 종료</h2>
-          <p id="resultText"></p>
-          <button id="restartButton" class="primary-button">다시 도전</button>
-        </div>
+      <div id="hud-right">
+        <div id="score">SCORE: 0</div>
       </div>
+    </div>
 
-      <div id="popupBlocker" class="popup-blocker">
-        <div class="fake-popup">
-          <button aria-label="닫기">×</button>
-          <strong>지금 바로 클릭!</strong>
-          <p>당신을 위한 추천 영상이 999개 도착했습니다.</p>
-        </div>
-        <div class="fake-popup small-popup">
-          <strong>단톡방 메시지 99+</strong>
-          <p>읽지 않은 알림이 쌓이고 있어요!</p>
-        </div>
-      </div>
-    </section>
+    <div id="status-banner"></div>
 
-    <section class="controls-info">
-      <p><kbd>Space</kbd> / <kbd>↑</kbd> 점프</p>
-      <p><kbd>↓</kbd> 슬라이드</p>
-      <p><kbd>R</kbd> 재시작</p>
-    </section>
+    <canvas id="game-canvas" width="900" height="450"></canvas>
 
-    <section class="mobile-controls" aria-label="모바일 조작 버튼">
-      <button id="jumpButton">점프</button>
-      <button id="slideButton">슬라이드</button>
-    </section>
-  </main>
+    <div id="touch-controls">
+      <button id="btn-slide" class="touch-btn">⬇ 슬라이드</button>
+      <button id="btn-jump" class="touch-btn">⬆ 점프</button>
+    </div>
 
-  <script src="game.js"></script>
+    <div class="instructions">스페이스/↑ : 점프 · ↓ : 슬라이드</div>
+  </div>
+
+  <!-- ===================== 게임 오버 화면 ===================== -->
+  <div id="gameover-screen" class="screen hidden">
+    <h1 class="go-title">😵 스좀비에게 잡혔다...</h1>
+    <p id="gameover-score">최종 점수: 0</p>
+    <p class="go-sub">다시 도전해서 인터넷 중독에서 벗어나자!</p>
+    <button id="retry-btn">다시 시작</button>
+  </div>
+
+  <!-- ===================== 승리 화면 ===================== -->
+  <div id="win-screen" class="screen hidden">
+    <h1 class="win-title">🎉 시험 100점 달성! 🎉</h1>
+    <p class="win-sub">인터넷 중독에서 완전히 벗어났다!<br/>현실 세계로 무사히 탈출 성공!</p>
+    <button id="win-retry-btn">한 번 더 플레이</button>
+  </div>
+
+</div>
+
+<script src="game.js"></script>
 </body>
 </html>
