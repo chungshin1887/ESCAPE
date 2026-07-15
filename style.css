@@ -100,27 +100,28 @@ html, body {
   background: rgba(10, 6, 30, 0.9);
   border: 2px solid #00f5ff;
   border-radius: 10px;
-  padding: 18px 22px;
-  min-height: 80px;
+  padding: 10px;
   width: 90%;
-  max-width: 560px;
+  max-width: 380px;
   box-shadow: 0 0 20px rgba(0,245,255,0.25);
   cursor: pointer;
   position: relative;
 }
-#dialogue-text {
-  font-size: 15px;
-  line-height: 1.7;
-  min-height: 48px;
-  white-space: pre-wrap;
+#dialogue-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  image-rendering: -webkit-optimize-contrast;
 }
 #dialogue-next-hint {
   position: absolute;
-  bottom: 6px;
-  right: 14px;
+  bottom: -22px;
+  right: 4px;
   font-size: 10px;
   color: #8ee9ff;
   animation: blink 1.2s infinite;
+  text-shadow: 0 0 4px rgba(0,0,0,0.8);
 }
 @keyframes blink { 0%,100%{opacity:0.3;} 50%{opacity:1;} }
 
