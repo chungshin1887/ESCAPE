@@ -89,7 +89,7 @@ function freshState() {
     phase: 'digital', // 'digital' | 'real'
     score: 0,
     lives: 3,
-    baseSpeed: 8.0,
+    baseSpeed: 9.5,
     frame: 0,
     nextSpawnAt: 60,
     nextZombiePassiveCheck: 0,
