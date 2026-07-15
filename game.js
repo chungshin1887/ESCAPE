@@ -362,8 +362,9 @@ function update() {
     banner(`⚡ 속도 UP! (Lv.${state.speedLevel})`, 80);
   }
   let speed = state.baseSpeed + state.speedLevel * SPEED_STEP_AMOUNT;
-  if (p.slowTimer > 0) { speed *= 0.35; p.slowTimer--; }
-  if (p.phoneZombieTimer > 0) { speed *= 0.55; }
+  let scoreMultiplier = 1;
+  if (p.slowTimer > 0) { speed *= 0.35; scoreMultiplier *= 0.3; p.slowTimer--; }
+  if (p.phoneZombieTimer > 0) { speed *= 0.55; scoreMultiplier *= 0.4; }
 
   // --- 트랩 처리 ---
   if (p.trappedTimer > 0) {
@@ -492,7 +493,7 @@ function update() {
   }
 
   // --- 점수(거리) 자동 증가 ---
-  addScore(Math.round(speed * 3.2));
+  addScore(Math.round(speed * 3.2 * scoreMultiplier));
   updateScoreUI();
   checkPhase();
   checkWin();
