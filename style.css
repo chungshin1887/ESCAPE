@@ -171,7 +171,7 @@ html, body {
 
 #info-tooltip {
   position: absolute;
-  bottom: calc(100% + 10px);
+  top: calc(100% + 10px);
   left: 50%;
   transform: translateX(-50%);
   width: max-content;
@@ -191,12 +191,12 @@ html, body {
 #info-tooltip::after {
   content: '';
   position: absolute;
-  top: 100%;
+  bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
-  border-width: 6px 6px 0 6px;
+  border-width: 0 6px 6px 6px;
   border-style: solid;
-  border-color: #fff transparent transparent transparent;
+  border-color: transparent transparent #fff transparent;
 }
 @keyframes tooltipBob {
   0%, 100% { transform: translateX(-50%) translateY(0); }
