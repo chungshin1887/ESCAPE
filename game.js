@@ -86,7 +86,7 @@ function freshState() {
     phase: 'digital', // 'digital' | 'real'
     score: 0,
     lives: 3,
-    baseSpeed: 7.3,
+    baseSpeed: 8.0,
     frame: 0,
     nextSpawnAt: 60,
     nextZombiePassiveCheck: 0,
@@ -633,6 +633,7 @@ runnerFrameData.forEach(f => {
 
 // 실제 사진 스프라이트를 그리는 헬퍼: 프레임별 크롭 여백이 달라도
 // 항상 같은 키 높이 & 발 위치를 유지하도록 알파 바운딩박스 기준으로 보정
+const RUN_FRAME_INDICES = [0, 1, 2, 3, 5, 7]; // 4번(점프), 6번(숙이기) 자세는 달리기 사이클에서 제외
 function drawRunnerSprite(frameIdx, cx, groundY, targetH, opts) {
   opts = opts || {};
   const f = runnerFrameData[frameIdx];
@@ -674,7 +675,7 @@ function drawNormalHero(cx, bottom, w, h, mode, frame, speedFactor, confused) {
     frameIdx = 6; scaleY = SLIDE_HEIGHT_RATIO + 0.18;
   } else {
     const interval = Math.max(2, Math.round(7 / speedFactor));
-    frameIdx = Math.floor(frame / interval) % runnerFrameData.length;
+    frameIdx = RUN_FRAME_INDICES[Math.floor(frame / interval) % RUN_FRAME_INDICES.length];
   }
 
   ctx.save();
