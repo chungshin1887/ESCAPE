@@ -74,6 +74,9 @@ const PHASE_SWITCH_SCORE = 50000;
 const GRAVITY = 1.05;
 const JUMP_FORCE = -16.5;
 const SLIDE_HEIGHT_RATIO = 0.5;
+const SPEED_STEP_SCORE = 10000; // 이 점수마다 한 단계씩 속도가 빨라짐
+const SPEED_STEP_AMOUNT = 0.9;  // 한 단계당 추가되는 속도
+const SPEED_STEP_MAX = 10;      // 최대 단계 (10단계 = 100000점)
 
 // ============================================================
 // 상태
@@ -112,6 +115,7 @@ function freshState() {
     bgScrollX: 0,
     transitionFlash: 0,
     bannerTimer: 0,
+    speedLevel: 0,
     ended: false,
   };
 }
@@ -351,8 +355,13 @@ function update() {
   const p = state.player;
   state.frame++;
 
-  // --- 속도 계산 ---
-  let speed = state.baseSpeed + Math.min(state.score / 9000, 6.5);
+  // --- 속도 계산 (일정 점수마다 단계적으로 빨라짐) ---
+  const newSpeedLevel = Math.min(SPEED_STEP_MAX, Math.floor(state.score / SPEED_STEP_SCORE));
+  if (newSpeedLevel > state.speedLevel) {
+    state.speedLevel = newSpeedLevel;
+    banner(`⚡ 속도 UP! (Lv.${state.speedLevel})`, 80);
+  }
+  let speed = state.baseSpeed + state.speedLevel * SPEED_STEP_AMOUNT;
   if (p.slowTimer > 0) { speed *= 0.35; p.slowTimer--; }
   if (p.phoneZombieTimer > 0) { speed *= 0.55; }
 
