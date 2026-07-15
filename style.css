@@ -142,9 +142,15 @@ html, body {
 #start-btn:hover, #retry-btn:hover, #win-retry-btn:hover { transform: scale(1.06); }
 
 /* ===================== 아이템 정보 버튼 & 모달 ===================== */
-#info-btn {
+#info-btn-wrap {
   order: 5;
   margin-top: -6px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#info-btn {
   font-size: 22px;
   width: 44px;
   height: 44px;
@@ -161,6 +167,40 @@ html, body {
 #info-btn:hover {
   transform: rotate(45deg) scale(1.08);
   background: rgba(255,255,255,0.16);
+}
+
+#info-tooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 160px;
+  background: #fff;
+  color: #1a0b3d;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: center;
+  padding: 8px 12px;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+  pointer-events: none;
+  animation: tooltipBob 1.8s ease-in-out infinite;
+}
+#info-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px 6px 0 6px;
+  border-style: solid;
+  border-color: #fff transparent transparent transparent;
+}
+@keyframes tooltipBob {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-4px); }
 }
 
 #item-info-modal {
